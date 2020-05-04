@@ -7,7 +7,7 @@
     <parent>
         <artifactId>testcontainers-spring-boot</artifactId>
         <groupId>com.playtika.testcontainers</groupId>
-        <version>1.49-SNAPSHOT</version>
+        <version>1.55-SNAPSHOT</version>
     </parent>
 
     <artifactId>embedded-kafka</artifactId>
@@ -39,6 +39,10 @@
         <dependency>
             <groupId>com.playtika.testcontainers</groupId>
             <artifactId>testcontainers-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>

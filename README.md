@@ -31,6 +31,8 @@ Usage of spring cloud in your production code is optional, but you will need it 
    16. [embedded-keycloak](#embedded-keycloak)
    17. [embedded-influxdb](#embedded-influxdb)
    18. [embedded-vault](#embedded-vault)
+   19. [embedded-oracle-xe](#embedded-oracle-xe)
+   20. [embedded-mysql](#embedded-mysql)
 
 3. [How to contribute](#how-to-contribute)
 
@@ -165,6 +167,7 @@ embedded.kafka.topicsToCreate=some_topic
   * To use another zookeper version pick corresponding docker image on [dockerhub](https://hub.docker.com/r/confluentinc/cp-zookeeper/tags)
 * embedded.kafka.enabled `(true|false, default is 'true')`
 * embedded.kafka.topicsToCreate `(comma separated list of topic names, default is empty)`
+* embedded.kafka.secureTopics `(subset of embedded.kafka.topicsToCreate that should be secured with ACLs)`
 * embedded.kafka.dockerImage `(default: confluentinc/cp-kafka:4.1.2. Kafka version is 1.1.x.)`
   * To use another kafka version pick corresponding docker image on  [dockerhub](https://hub.docker.com/r/confluentinc/cp-kafka/tags)
   * [Confluent Platform and Apache Kafka Compatibility](https://docs.confluent.io/current/installation/versions-interoperability.html#cp-and-apache-kafka-compatibility)
@@ -181,6 +184,30 @@ Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to ho
 ##### Produces
 * embedded.zookeeper.zookeeperConnect
 * embedded.kafka.brokerList
+* embedded.kafka.saslPlaintext.brokerList
+* embedded.kafka.saslPlaintext.user
+* embedded.kafka.saslPlaintext.password
+
+##### Using SASL_PLAINTEXT
+Note that only `SASL_PLAINTEXT` protocol supported, meaning TLS is not used.  
+embedded-kafka configuration (via bootstrap.properties):
+```properties
+embedded.kafka.topicsToCreate=nonSecureTopic,secureTopic
+embedded.kafka.secureTopics=secureTopic
+```
+Application configuration:
+```properties
+# Common for Producer and Consumer 
+bootstrap.servers=${embedded.kafka.saslPlaintext.brokerList}
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=PLAIN
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+  username="${embedded.kafka.saslPlaintext.user}" \
+  password="${embedded.kafka.saslPlaintext.password}";
+
+# Consumer group.id could be any as ACLs are applied to wildcard group
+```
+
 
 ### embedded-rabbitmq
 ##### Maven dependency
@@ -321,7 +348,7 @@ Containers for `embedded-kafka` and `embedded-zookeper` bind their volumes to ho
 * embedded.postgresql.dockerImage `(default is set to 'postgres:10-alpine')`
   * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/postgres/tags/)
 * embedded.postgresql.waitTimeoutInSeconds `(default is 60 seconds)`
-* embedded.postgresql.schema
+* embedded.postgresql.database
 * embedded.postgresql.user
 * embedded.postgresql.password
 ##### Produces
@@ -600,6 +627,55 @@ spring.cloud.vault:
   kv:
    enabled: true
 ```
+
+### embedded-oracle-xe
+
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-oracle-xe</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+##### Consumes (via bootstrap.properties)
+* `embedded.oracle.enabled` (boolean, true|false, default is 'true')
+* `embedded.oracle.waitTimeoutInSeconds` (default is 60 seconds)
+* `embedded.oracle.dockerImage` (String, default is set to 'oracleinanutshell/oracle-xe-11g')
+  * You can pick wanted image on [dockerhub](https://hub.docker.com/search?q=oracle-xe&type=image)
+  * You can [build image by yourself](https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
+* `embedded.oracle.user` (String, default is 'system')
+* `embedded.oracle.password` (String, default is 'oracle')
+
+##### Produces
+* `embedded.oracle.host`
+* `embedded.oracle.port` (mapped TCP port)
+* `embedded.oracle.db` (set to 'xe')
+
+
+### embedded-mysql
+##### Maven dependency
+```xml
+<dependency>
+    <groupId>com.playtika.testcontainers</groupId>
+    <artifactId>embedded-mysql</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+##### Consumes (via bootstrap.properties)
+* embedded.mysql.enabled `(true|false, default is 'true')`
+* embedded.mysql.encoding `(default is 'utf8mb4')`
+* embedded.mysql.collation `(default is 'utf8mb4_unicode_ci')`
+* embedded.mysql.dockerImage `(default is set to 'mysql:5.7.22')`
+  * You can pick wanted version on [dockerhub](https://hub.docker.com/r/library/mysql/tags/)
+* embedded.mysql.waitTimeoutInSeconds `(default is 60 seconds)`
+##### Produces
+* embedded.mysql.port
+* embedded.mysql.host
+* embedded.mysql.schema
+* embedded.mysql.user
+* embedded.mysql.password
 
 ## How to contribute
 ### Flow

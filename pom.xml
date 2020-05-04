@@ -5,7 +5,7 @@
 
     <groupId>com.playtika.testcontainers</groupId>
     <artifactId>testcontainers-spring-boot</artifactId>
-    <version>1.49-SNAPSHOT</version>
+    <version>1.55-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -29,6 +29,7 @@
     </scm>
 
     <modules>
+        <module>testcontainers-spring-boot-bom</module>
         <module>testcontainers-common</module>
         <module>embedded-kafka</module>
         <module>embedded-keycloak</module>
@@ -48,6 +49,8 @@
         <module>embedded-google-pubsub</module>
         <module>embedded-influxdb</module>
         <module>embedded-vault</module>
+        <module>embedded-oracle-xe</module>
+        <module>embedded-mysql</module>
         <module>embedded-localstack</module>
     </modules>
 
