@@ -45,10 +45,10 @@ public class EmbeddedLocalStackTest {
     @Value("${embedded.localstack.secretKey}")
     private String secretKey;
 
-    @Value("${embedded.localstack.S3.endpoint}")
+    @Value("${embedded.localstack.S3}")
     private String s3Endpoint;
 
-    @Value("${embedded.localstack.SQS.endpoint}")
+    @Value("${embedded.localstack.SQS}")
     private String sqsEndpoint;
 
     @Value("${embedded.localstack.region}")
@@ -116,7 +116,7 @@ public class EmbeddedLocalStackTest {
         assertThat(environment.getProperty("embedded.localstack.accessKey")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.secretKey")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.region")).isNotEmpty();
-        assertThat(environment.getProperty("embedded.localstack.S3.endpoint")).isNotEmpty();
+        assertThat(environment.getProperty("embedded.localstack.S3")).isNotEmpty();
         assertThat(environment.getProperty("embedded.localstack.S3.port")).isNotEmpty();
     }
 

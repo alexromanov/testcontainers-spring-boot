@@ -25,12 +25,12 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 public class EmbeddedLocalStackBootstrapConfiguration {
     @ConditionalOnMissingBean(name = BEAN_NAME_EMBEDDED_LOCALSTACK)
     @Bean(name = BEAN_NAME_EMBEDDED_LOCALSTACK, destroyMethod = "stop")
-    public LocalStackContainer localStack(ConfigurableEnvironment environment,
+    public ConcreteLocalStackContainer localStack(ConfigurableEnvironment environment,
                                              LocalStackProperties properties) {
         log.info("Starting Localstack server. Docker image: {}", properties.dockerImage);
 
-        LocalStackContainer localStackContainer = new LocalStackContainer("0.10.8")
-                .withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
+        ConcreteLocalStackContainer localStackContainer = new ConcreteLocalStackContainer(properties.dockerImage);
+        localStackContainer.withEnv("EDGE_PORT", String.valueOf(properties.getEdgePort()))
                 .withEnv("DEFAULT_REGION", properties.getDefaultRegion())
                 .withEnv("HOSTNAME", properties.getHostname())
                 .withEnv("HOSTNAME_EXTERNAL", properties.getHostnameExternal())
@@ -44,7 +44,7 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         return localStackContainer;
     }
 
-    private void registerElasticSearchEnvironment(LocalStackContainer localStack,
+    private void registerElasticSearchEnvironment(ConcreteLocalStackContainer localStack,
                                                   ConfigurableEnvironment environment,
                                                   LocalStackProperties properties) {
         String host = localStack.getContainerIpAddress();
@@ -56,7 +56,7 @@ public class EmbeddedLocalStackBootstrapConfiguration {
         map.put("embedded.localstack.region", localStack.getRegion());
         String prefix = "embedded.localstack.";
         for (String service : properties.services){
-            map.put(prefix + service + ".endpoint", localStack.getEndpointConfiguration(LocalStackContainer.Service.valueOf(service))
+            map.put(prefix + service, localStack.getEndpointConfiguration(LocalStackContainer.Service.valueOf(service))
                                                               .getServiceEndpoint());
             map.put(prefix + service + ".port", localStack.getMappedPort(LocalStackContainer.Service.valueOf(service).getPort()));
         }
